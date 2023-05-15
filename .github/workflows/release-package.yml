@@ -34,16 +34,19 @@ jobs:
         uses: actions/checkout@v2
         with:
           submodules: recursive
-      - name: condition 1
+      - name: bootstrap vcpkg in Windows
         if: runner.os == 'Windows'
-        run: echo "The operating system on the runner is $env:OWNER, $env:VCPKG_BINARY_SOURCES."
-      - name: condition 2
+        run: |
+          echo "The operating system on the runner is $env:OWNER, $env:VCPKG_BINARY_SOURCES."
+          ./vcpkg/bootstrap-vcpkg.bat
+      - name: bootstrap vcpkg in non Windows
         if: runner.os != 'Windows'
         run: |
           pwd
           ls -al
           ls -al ./vcpkg
           echo "The operating system on the runner is not Windows, it's $RUNNER_OS. $VCPKG_BINARY_SOURCES."
+          ./vcpkg/bootstrap-vcpkg.sh
       # This step assumes `vcpkg` has been bootstrapped (run `./vcpkg/bootstrap-OWNER`)
       - name: "Setup NuGet Credentials"
         shell: "bash"
