@@ -3,6 +3,9 @@
 # In this example, vcpkg has been added as a submodule (`git submodule add https://github.com/Microsoft/vcpkg`).
 name: "vcpkg Package"
 
+permissions:
+  packages: write
+
 on:
   workflow_dispatch:
   push:
