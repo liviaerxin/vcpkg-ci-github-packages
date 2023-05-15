@@ -30,11 +30,16 @@ jobs:
       OWNER: "liviaerxin"
     runs-on: ${{ matrix.os }}
     steps:
-      # This step assumes `vcpkg` has been bootstrapped (run `./vcpkg/bootstrap-vcpkg`)
+      - name: condition 1
+        if: runner.os == 'Windows'
+        run: echo "The operating system on the runner is $env:OWNER, $env:VCPKG_BINARY_SOURCES."
+      - name: condition 2
+        if: runner.os != 'Windows'
+        run: echo "The operating system on the runner is not Windows, it's $RUNNER_OS. $VCPKG_BINARY_SOURCES."
+      # This step assumes `vcpkg` has been bootstrapped (run `./vcpkg/bootstrap-OWNER`)
       - name: "Setup NuGet Credentials"
         shell: "bash"
         run: |
-          ${{ matrix.mono }} `echo OWNER: $env:OWNER, VCPKG_BINARY_SOURCES: $env:VCPKG_BINARY_SOURCES` \
           ${{ matrix.mono }} `./vcpkg/vcpkg fetch nuget | tail -n 1` \
             sources add \
             -source "https://nuget.pkg.github.com/liviaerxin/index.json" \
