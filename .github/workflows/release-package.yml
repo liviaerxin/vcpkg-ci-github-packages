@@ -39,7 +39,9 @@ jobs:
         run: echo "The operating system on the runner is $env:OWNER, $env:VCPKG_BINARY_SOURCES."
       - name: condition 2
         if: runner.os != 'Windows'
-        run: echo "The operating system on the runner is not Windows, it's $RUNNER_OS. $VCPKG_BINARY_SOURCES."
+        run: |
+          pwd
+          echo "The operating system on the runner is not Windows, it's $RUNNER_OS. $VCPKG_BINARY_SOURCES."
       # This step assumes `vcpkg` has been bootstrapped (run `./vcpkg/bootstrap-OWNER`)
       - name: "Setup NuGet Credentials"
         shell: "bash"
