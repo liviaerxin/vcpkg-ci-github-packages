@@ -34,17 +34,17 @@ jobs:
       - name: "Setup NuGet Credentials"
         shell: "bash"
         run: |
-          ${{ matrix.mono }} `echo "OWNER: $env:OWNER, VCPKG_BINARY_SOURCES: $env:VCPKG_BINARY_SOURCES"` \
+          ${{ matrix.mono }} `echo OWNER: $env:OWNER, VCPKG_BINARY_SOURCES: $env:VCPKG_BINARY_SOURCES` \
           ${{ matrix.mono }} `./vcpkg/vcpkg fetch nuget | tail -n 1` \
             sources add \
-            -source "https://nuget.pkg.github.com/$env:OWNER/index.json" \
+            -source "https://nuget.pkg.github.com/liviaerxin/index.json" \
             -storepasswordincleartext \
             -name "GitHub" \
-            -username "$env:OWNER" \
+            -username "liviaerxin" \
             -password "${{ secrets.GITHUB_TOKEN }}"
           ${{ matrix.mono }} `./vcpkg/vcpkg fetch nuget | tail -n 1` \
             setapikey "${{ secrets.GITHUB_TOKEN }}" \
-            -source "https://nuget.pkg.github.com/$env:OWNER/index.json"
+            -source "https://nuget.pkg.github.com/liviaerxin/index.json"
 
       # Omit this step if you're using manifests
       - name: "vcpkg package restore"
