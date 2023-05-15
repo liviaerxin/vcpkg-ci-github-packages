@@ -30,10 +30,12 @@ jobs:
       OWNER: "liviaerxin"
     runs-on: ${{ matrix.os }}
     steps:
-      - name: checkout all the submodules
+      - name: Checkout repository
         uses: actions/checkout@v2
+      - name: Checkout submodules
+        uses: textbook/git-checkout-submodule-action@master
         with:
-          submodules: recursive
+          remote: true
       - name: condition 1
         if: runner.os == 'Windows'
         run: echo "The operating system on the runner is $env:OWNER, $env:VCPKG_BINARY_SOURCES."
