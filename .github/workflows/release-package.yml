@@ -42,8 +42,6 @@ jobs:
       - name: bootstrap vcpkg in non Windows
         if: runner.os != 'Windows'
         run: |
-          pwd
-          ls -al
           ls -al ./vcpkg
           echo "The operating system on the runner is not Windows, it's $RUNNER_OS. $VCPKG_BINARY_SOURCES."
           ./vcpkg/bootstrap-vcpkg.sh
