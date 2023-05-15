@@ -20,10 +20,10 @@ jobs:
           - os: "windows-2019"
             triplet: "x86-windows"
             mono: ""
-          - os: "ubuntu-20.04"
-            triplet: "x64-linux"
-            # To run `nuget.exe` on non-Windows platforms, we must use `mono`.
-            mono: "mono"
+          # - os: "ubuntu-20.04"
+          #   triplet: "x64-linux"
+          #   # To run `nuget.exe` on non-Windows platforms, we must use `mono`.
+          #   mono: "mono"
     env:
       VCPKG_BINARY_SOURCES: "clear;nuget,GitHub,readwrite"
       # Replace <OWNER> with your organization name
@@ -51,14 +51,19 @@ jobs:
       - name: "Setup NuGet Credentials"
         shell: "bash"
         run: |
-          ${{ matrix.mono }} `./vcpkg/vcpkg fetch nuget | tail -n 1` \
+          set -x
+          nuget_username="liviaerxin"
+          nuget_password="${{ secrets.GITHUB_TOKEN }}"
+          nuget="$(./vcpkg/vcpkg fetch nuget | tail -n 1)"
+
+          ${{ matrix.mono }} "${nuget}" \
             sources add \
             -source "https://nuget.pkg.github.com/liviaerxin/index.json" \
             -storepasswordincleartext \
             -name "GitHub" \
-            -username "liviaerxin" \
+            -username "${nuget_username}" \
             -password "${{ secrets.GITHUB_TOKEN }}"
-          ${{ matrix.mono }} `./vcpkg/vcpkg fetch nuget | tail -n 1` \
+          ${{ matrix.mono }}  "${nuget}" \
             setapikey "${{ secrets.GITHUB_TOKEN }}" \
             -source "https://nuget.pkg.github.com/liviaerxin/index.json"
 
@@ -66,4 +71,4 @@ jobs:
       - name: "vcpkg package restore"
         shell: "bash"
         run: >
-          ./vcpkg/vcpkg install sqlite3 cpprestsdk --triplet ${{ matrix.triplet }}
+          ./vcpkg/vcpkg install sqlite3 cpprestsdk --triplet ${{ matrix.triplet }} --debug
