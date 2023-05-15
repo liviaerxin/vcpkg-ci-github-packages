@@ -10,24 +10,24 @@ on:
       - main
   pull_request:
 
+env:
+  VCPKG_BINARY_SOURCES: "clear;nuget,GitHub,readwrite"
+  # Replace <OWNER> with your organization name
+  OWNER: "liviaerxin"
+
 jobs:
   build:
     name: Build ${{ matrix.os }}-${{ matrix.triplet.mono }} wheel
     strategy:
       matrix:
-        os: ["windows-2019"]
         include:
           - os: "windows-2019"
-            triplet: "x86-windows"
+            triplet: "x64-windows"
             mono: ""
-          # - os: "ubuntu-20.04"
-          #   triplet: "x64-linux"
-          #   # To run `nuget.exe` on non-Windows platforms, we must use `mono`.
-          #   mono: "mono"
-    env:
-      VCPKG_BINARY_SOURCES: "clear;nuget,GitHub,readwrite"
-      # Replace <OWNER> with your organization name
-      OWNER: "liviaerxin"
+          - os: "ubuntu-20.04"
+            triplet: "x64-linux"
+            # To run `nuget.exe` on non-Windows platforms, we must use `mono`.
+            mono: "mono"
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout repository and submodules
@@ -42,6 +42,7 @@ jobs:
       - name: bootstrap vcpkg in non Windows
         if: runner.os != 'Windows'
         run: |
+          pwd
           ls -al ./vcpkg
           echo "The operating system on the runner is not Windows, it's $RUNNER_OS. $VCPKG_BINARY_SOURCES."
           ./vcpkg/bootstrap-vcpkg.sh
@@ -50,23 +51,21 @@ jobs:
         shell: "bash"
         run: |
           set -x
-          nuget_username=liviaerxin
-          nuget_password="${{ secrets.GITHUB_TOKEN }}"
           nuget="$(./vcpkg/vcpkg fetch nuget | tail -n 1)"
 
           ${{ matrix.mono }} "${nuget}" \
             sources add \
-            -source "https://nuget.pkg.github.com/liviaerxin/index.json" \
+            -source "https://nuget.pkg.github.com/${OWNER}/index.json" \
             -storepasswordincleartext \
             -name "GitHub" \
-            -username "${nuget_username}" \
+            -username "${OWNER}" \
             -password "${{ secrets.GITHUB_TOKEN }}"
           ${{ matrix.mono }}  "${nuget}" \
             setapikey "${{ secrets.GITHUB_TOKEN }}" \
-            -source "https://nuget.pkg.github.com/liviaerxin/index.json"
+            -source "https://nuget.pkg.github.com/${OWNER}/index.json"
 
       # Omit this step if you're using manifests
       - name: "vcpkg package restore"
         shell: "bash"
         run: >
-          ./vcpkg/vcpkg install sqlite3 cpprestsdk --triplet ${{ matrix.triplet }} --debug
+          ./vcpkg/vcpkg install sqlite3 cpprestsdk --triplet ${{ matrix.triplet }}
