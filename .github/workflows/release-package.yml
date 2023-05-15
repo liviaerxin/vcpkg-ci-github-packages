@@ -42,6 +42,7 @@ jobs:
         run: |
           pwd
           ls -al
+          ls -al /vcpkg
           echo "The operating system on the runner is not Windows, it's $RUNNER_OS. $VCPKG_BINARY_SOURCES."
       # This step assumes `vcpkg` has been bootstrapped (run `./vcpkg/bootstrap-OWNER`)
       - name: "Setup NuGet Credentials"
