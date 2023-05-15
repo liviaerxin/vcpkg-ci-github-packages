@@ -15,7 +15,7 @@ jobs:
     name: Build ${{ matrix.os }}-${{ matrix.triplet.mono }} wheel
     strategy:
       matrix:
-        os: ["windows-2019", "ubuntu-20.04"]
+        os: ["windows-2019"]
         include:
           - os: "windows-2019"
             triplet: "x86-windows"
