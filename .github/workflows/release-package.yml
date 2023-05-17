@@ -75,7 +75,13 @@ jobs:
             -source "https://nuget.pkg.github.com/${OWNER}/index.json"
 
       # Omit this step if you're using manifests
+      # - name: "vcpkg package restore"
+      #   shell: "bash"
+      #   run: >
+      #     ./vcpkg/vcpkg install sqlite3 cpprestsdk --triplet ${{ matrix.triplet }}
+
+      # Omit this step if you're using classic
       - name: "vcpkg package restore"
         shell: "bash"
         run: >
-          ./vcpkg/vcpkg install sqlite3 cpprestsdk --triplet ${{ matrix.triplet }}
+          ./vcpkg/vcpkg install --triplet ${{ matrix.triplet }}
