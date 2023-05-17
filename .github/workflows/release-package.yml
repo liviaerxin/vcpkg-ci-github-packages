@@ -1,26 +1,22 @@
-# actions.yaml
-#
 # In this example, vcpkg has been added as a submodule (`git submodule add https://github.com/Microsoft/vcpkg`).
-name: "vcpkg Package"
-
-permissions:
-  packages: write
+name: "vcpkg binary Package"
 
 on:
+  # push:
+  #   branches:
+  #     - main
+  #   tags:
+  #     - v1.**
+  # pull_request:
+  # Enable a workflow to be triggered manually
   workflow_dispatch:
-  push:
-    branches:
-      - main
-  pull_request:
-
-env:
-  VCPKG_BINARY_SOURCES: "clear;nuget,GitHub,readwrite"
-  # Replace <OWNER> with your organization name
-  OWNER: "liviaerxin"
+  release:
+    types: [created]
 
 jobs:
-  build:
-    name: Build ${{ matrix.os }}-${{ matrix.triplet.mono }} wheel
+  publish-gpr:
+    # In this example, Vcpkg has been added as a submodule (`git submodule add https://github.com/Microsoft/vcpkg`).
+    name: Publish to GitHub Package Registry(GPR) with ${{ matrix.os }}-${{ matrix.triplet.mono }} vcpkg binary packages 
     strategy:
       matrix:
         include:
@@ -32,16 +28,26 @@ jobs:
             # To run `nuget.exe` on non-Windows platforms, we must use `mono`.
             mono: "mono"
     runs-on: ${{ matrix.os }}
+    permissions:
+      # Needs to publish to GitHub Packages
+      packages: write
+      contents: read
+    env:
+      VCPKG_BINARY_SOURCES: "clear;nuget,GitHub,readwrite"
+      # Replace <OWNER> with your organization name
+      OWNER: "liviaerxin"
     steps:
       - name: Checkout repository and submodules
         uses: actions/checkout@v2
         with:
           submodules: recursive
+      
       - name: bootstrap vcpkg in Windows
         if: runner.os == 'Windows'
         run: |
           echo "The operating system on the runner is $env:OWNER, $env:VCPKG_BINARY_SOURCES."
           ./vcpkg/bootstrap-vcpkg.bat
+      
       - name: bootstrap vcpkg in non Windows
         if: runner.os != 'Windows'
         run: |
@@ -49,6 +55,7 @@ jobs:
           ls -al ./vcpkg
           echo "The operating system on the runner is not Windows, it's $RUNNER_OS. $VCPKG_BINARY_SOURCES."
           ./vcpkg/bootstrap-vcpkg.sh
+      
       # This step assumes `vcpkg` has been bootstrapped (run `./vcpkg/bootstrap-OWNER`)
       - name: "Setup NuGet Credentials"
         shell: "bash"
